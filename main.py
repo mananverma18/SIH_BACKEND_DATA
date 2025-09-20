@@ -6,7 +6,7 @@ import os
 
 app = FastAPI()
 
-# ✅ Define model/scaler paths
+# ✅ Model/scaler paths
 MODEL_PATH = os.path.join("backend", "stream_model.pkl")
 SCALER_PATH = os.path.join("backend", "scaler.pkl")
 
@@ -28,7 +28,7 @@ class QuizInput(BaseModel):
     arts: int
     vocational: int
 
-# ✅ Preprocessing (same as during training)
+# ✅ Preprocessing
 def preprocess_input(data: dict):
     df = pd.DataFrame([data])
     df["total_aptitude"] = df[["logical", "numerical", "verbal"]].sum(axis=1)
@@ -36,6 +36,11 @@ def preprocess_input(data: dict):
     df["sci_bias"] = df["medical"] - df["nonmedical"]
     df["arts_vs_com"] = df["arts"] - df["commerce"]
     return df
+
+# ✅ Root route (for quick testing)
+@app.get("/")
+def root():
+    return {"message": "API is live. Use POST /predict_stream to get predictions."}
 
 # ✅ Prediction endpoint
 @app.post("/predict_stream")
